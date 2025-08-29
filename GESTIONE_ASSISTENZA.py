@@ -577,13 +577,73 @@ def salva_ticket(
     conn.close()
 
 
+def mostra_popup_ticket_aperti(df):
+    """Mostra un popup modale nativo (st.dialog) con i ticket aperti/in lavorazione.
+    Se la versione di Streamlit non supporta st.dialog, usa un expander come fallback.
+    """
+    # --- se c'è st.dialog, usa il modale vero ---
+    if hasattr(st, "dialog"):
+        @st.dialog("⚠️ Ticket aperti / in lavorazione")
+        def _modal():
+            st.caption("Controlla i ticket pendenti prima di crearne uno nuovo.")
+            st.dataframe(df, use_container_width=True, hide_index=True)
+            if st.button("Chiudi"):
+                st.session_state["open_tickets_seen"] = True
+                st.rerun()
+        _modal()
+    else:
+        # --- fallback (expander) ---
+        st.warning(f"⚠️ Ci sono {len(df)} ticket aperti/in lavorazione.")
+        with st.expander("📋 Vedi elenco ticket pendenti", expanded=True):
+            st.dataframe(df, use_container_width=True, hide_index=True)
+            if st.button("Ho letto"):
+                st.session_state["open_tickets_seen"] = True
+                st.rerun()
+
 def pagina_ticket():
     st.header("🎫 GESTIONE TICKET")
+    
+    # carica ticket aperti / in lavorazione
+    con = sqlite3.connect(DB_FILE)
+    df_open = pd.read_sql_query("""
+        SELECT t.id,
+               c.matricola,
+               c.azienda,
+               t.indirizzo_cliente,
+               t.citta_cliente,
+               t.provincia_cliente,
+               t.tecnico_nome,
+               t.descrizione,
+               t.stato,
+               t.data_creazione
+        FROM ticket t
+        LEFT JOIN clienti c ON c.id = t.cliente_id
+        WHERE t.stato IN ('Aperto','In lavorazione')
+        ORDER BY datetime(t.data_creazione) ASC, t.id ASC
+    """, con)
+    con.close()
+
+    # mostra il popup solo se:
+    # - ci sono ticket aperti
+    # - non è già stato chiuso in questa sessione
+    if not df_open.empty and not st.session_state.get("open_tickets_seen", False):
+        mostra_popup_ticket_aperti(df_open)
+
+    # opzionale: bottone per riaprire il popup quando vuoi
+    with st.sidebar:
+        if not df_open.empty and st.button("🔔 Ticket aperti"):
+            st.session_state["open_tickets_seen"] = False
+            # se c'è st.dialog, aprilo subito
+            if hasattr(st, "dialog"):
+                mostra_popup_ticket_aperti(df_open)
+    
+    
+    
     st.subheader("➕ Nuovo Ticket ")
 
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
-
+    
     # --- Caricamento clienti e tecnici ---
     clienti_df = pd.read_sql_query("""
         SELECT id, matricola, modello, codice, azienda, indirizzo, citta, provincia, contatto
