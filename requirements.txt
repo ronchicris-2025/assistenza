@@ -3,3 +3,5 @@ pandas
 reportlab
 streamlit-pdf-viewer
 openpyxl
+folium
+geopy
