@@ -2721,7 +2721,6 @@ def mostra_mappa_tecnici(regioni_sel, citta_sel=None, raggio_km=None, num_punti=
             <b>{icona} {descrizione}</b><br>
             <hr style="margin: 1px 0;">
             👷 <b>Tecnico:</b> {row['nome']}<br>
-            'indirizzo': row['indirizzo'],
             📍 <b>Località:</b> {row['citta']} ({row['provincia']})<br>
             <hr style="margin: 1px 0;">
             🏞 <b>Regione:</b> {row['regione']}<br>
@@ -3418,3 +3417,4 @@ elif menu == menu_options[9]:  # ⬆️ Upload Tecnici
     pagina_upload_tecnici()
 elif menu == menu_options[10]:  # 📤 Import/Export
     pagina_import_export()
+
