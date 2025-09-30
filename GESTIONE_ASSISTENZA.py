@@ -66,7 +66,7 @@ class DatabaseHandler:
             # Connessione a SQLite
             self.connection = sqlite3.connect('assistenza.db')
             self.connection.row_factory = sqlite3.Row  # Per accedere alle colonne per nome
-            st.write("✅ Connessione a SQLite locale")
+            
     def disconnect(self):
         if self.connection:
             self.connection.close()
@@ -3768,5 +3768,6 @@ elif menu == menu_options[9]:  # ⬆️ Upload Tecnici
     pagina_upload_tecnici()
 elif menu == menu_options[10]:  # 📤 Import/Export
     pagina_import_export()
+
 
 
