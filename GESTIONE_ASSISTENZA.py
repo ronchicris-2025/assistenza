@@ -61,7 +61,7 @@ class DatabaseHandler:
                     user=os.getenv('SUPABASE_USER'),
                     password=os.getenv('SUPABASE_PASSWORD')
                 )
-                st.write("✅ Connessione a PostgreSQL su Supabase")
+            
         else:
             # Connessione a SQLite
             self.connection = sqlite3.connect('assistenza.db')
@@ -3768,4 +3768,5 @@ elif menu == menu_options[9]:  # ⬆️ Upload Tecnici
     pagina_upload_tecnici()
 elif menu == menu_options[10]:  # 📤 Import/Export
     pagina_import_export()
+
 
