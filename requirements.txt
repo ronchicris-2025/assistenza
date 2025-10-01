@@ -6,5 +6,3 @@ openpyxl
 folium
 geopy
 streamlit_folium
-psycopg2-binary
-python-dotenv
